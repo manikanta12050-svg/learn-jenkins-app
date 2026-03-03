@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    }
+
     stages {
         stage('build') {
             agent {
@@ -12,12 +16,10 @@ pipeline {
 
             steps {
                 sh '''
+                    docker --version
                     ls -la
                     node --version
                     npm --version
-                    npm ci
-                    npm run build
-                    ls -la
                 '''
             }
         }
