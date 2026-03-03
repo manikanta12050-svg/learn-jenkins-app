@@ -2,24 +2,18 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        DOCKER_BIN = "/usr/local/bin/docker"   // change if yours is different
+        PATH = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     stages {
         stage('build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-
             steps {
                 sh '''
+                    echo "Docker Location:"
+                    which docker
                     docker --version
-                    ls -la
-                    node --version
-                    npm --version
+                    docker run --rm node:18-alpine node -v
                 '''
             }
         }
