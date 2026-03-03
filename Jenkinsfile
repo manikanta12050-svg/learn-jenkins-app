@@ -2,18 +2,37 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_BIN = "/usr/local/bin/docker"   // change if yours is different
-        PATH = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     stages {
-        stage('build') {
+
+        stage('Check Docker on Host') {
             steps {
                 sh '''
-                    echo "Docker Location:"
+                    echo "Checking Docker on Jenkins host..."
                     which docker
                     docker --version
-                    docker run --rm node:18-alpine node -v
+                    docker ps
+                '''
+            }
+        }
+
+        stage('Build Inside Docker') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+
+            steps {
+                sh '''
+                    echo "Inside Docker container"
+                    ls -la
+                    node --version
+                    npm --version
                 '''
             }
         }
